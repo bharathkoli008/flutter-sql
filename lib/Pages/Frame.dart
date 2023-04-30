@@ -4,13 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sql_sample/Pages/Notices.dart';
-import 'package:sql_sample/Pages/Profile.dart';
+import 'package:sql_sample/Pages/Profile/Profile.dart';
 import 'package:sql_sample/Pages/prepage.dart';
 import 'package:http/http.dart' as http;
 
 
 class Frame extends StatefulWidget {
-  final String data;
+  final Map<String,dynamic> data;
    Frame({Key? key, required this.data});
 
   @override
@@ -38,6 +38,9 @@ class _FrameState extends State<Frame> {
   final List<Widget> _pages = [
 
   ];
+  Color originalColor = Color(0xFF1d2754);
+  Color? brighterColor = Color.lerp( Color(0xFF1d2754), Colors.white, 0.3);
+  Color? brighterColor2 = Color.lerp( Color(0xFF1d2754), Colors.white, 0.4);
 
   @override
   void initState() {
@@ -55,10 +58,17 @@ class _FrameState extends State<Frame> {
               end: Alignment.centerRight,
               colors: [
 
-                Colors.lightBlueAccent,
-                Colors.blueAccent,
-                Colors.blueAccent,
+               Color (0xFF1d2754),
+                Color(0xFF293D6E),
+                Color(0xFF284176),
+                Color(0xFF293D6E),
                 Colors.white
+
+
+                // Colors.lightBlueAccent,
+                // Colors.blueAccent,
+                // Colors.blueAccent,
+                // Colors.white
               ])),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -68,12 +78,13 @@ class _FrameState extends State<Frame> {
             setState(() => _selectedIndex = index);
           },
           children:  <Widget>[
+             Prepage(
+               data: widget.data,
+             ),
+            const Notices(),
             ProfilePage(
               data: widget.data,
             ),
-           const Prepage(),
-            const Notices(),
-
           ],
         ),
 
@@ -87,7 +98,7 @@ class _FrameState extends State<Frame> {
           child: Container(
             height: MediaQuery.of(context).size.height * 0.08,
             width: MediaQuery.of(context).size.width * 0.7,
-            color: Colors.blueAccent,
+            color:  Color(0xFF1d2754),
             child:  Padding(
               padding: const EdgeInsets.only(left: 20,right: 20),
               child: ClipRRect(
@@ -96,7 +107,7 @@ class _FrameState extends State<Frame> {
                     topLeft: Radius.circular(25)
                 ),
                 child: GNav(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor:  Color(0xFF1d2754),
                   gap: 8,
                   padding: const EdgeInsets.only(
                       left: 10,
@@ -115,7 +126,7 @@ class _FrameState extends State<Frame> {
                       iconColor: Colors.white,
                       iconSize: 30,
                       text: 'Home',
-                      iconActiveColor: Colors.blueAccent,
+                      iconActiveColor:  Color(0xFF1d2754),
                       style: GnavStyle.oldSchool,
                       textStyle: GoogleFonts.nunito(
                           fontSize: 15,
@@ -127,7 +138,7 @@ class _FrameState extends State<Frame> {
                       textColor: Colors.white,
                       iconColor: Colors.white,
                       style: GnavStyle.oldSchool,
-                      iconActiveColor: Colors.blueAccent,
+                      iconActiveColor: Color(0xFF1d2754),
                       textStyle: GoogleFonts.nunito(
                           fontSize: 15,
                           color: Colors.black,
@@ -138,7 +149,7 @@ class _FrameState extends State<Frame> {
                       iconSize: 30,
                       textColor: Colors.white,
                       iconColor: Colors.white,
-                      iconActiveColor: Colors.blueAccent,
+                      iconActiveColor:  Color(0xFF1d2754),
                       textStyle: GoogleFonts.nunito(
                           fontSize: 15,
                           color: Colors.black,

@@ -50,6 +50,8 @@ dependencies:
   gradient_textfield: ^0.0.1
   google_nav_bar: ^5.0.6
   intl: ^0.18.0
+  get_storage: ^2.1.1
+  percent_indicator: ^4.2.3
   random_avatar: ^0.0.7
   fluttericon: ^2.0.0
   file_picker: ^5.2.5
@@ -60,8 +62,11 @@ dependencies:
   upi_india: ^3.0.1
   fadingpageview: ^1.0.0
   url_launcher: ^6.1.9
+  flutter_neumorphic: ^3.2.0
+  zoom_widget: ^2.0.1
   tim_ui_kit_push_plugin: ^2.4.0+5
-  audioplayers:
+  onesignal_flutter: ^3.5.1
+  flutter_heatmap_calendar: ^1.0.5
   http:
 
 dev_dependencies:

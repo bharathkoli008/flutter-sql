@@ -1,11 +1,23 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sql_sample/Pages/Frame.dart';
 import 'package:sql_sample/Pages/LoginPage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+  OneSignal.shared.setAppId('bdfb2f73-d845-48e0-b1fa-1070d2796dfe');
+  OneSignal.shared.promptUserForPushNotificationPermission().then((value) {
+    print('%%%%%%%%%%%%%%%%$value');
+  });
 
 
-void main() async {
+  await GetStorage.init();
   runApp( MyApp());
 }
 
@@ -19,103 +31,49 @@ class MyApp extends StatelessWidget {
       title: 'ChatGPT',
       theme: ThemeData(useMaterial3: true),
       home: Center(
-        child: LoginPage(),
+        child: Authcheck(),
       ),
     );
   }
 }
 
-class Data {
-  final String id;
-  final String name;
-  final String SSN;
-  final int salary;
-  final String date_of_joining;
-  final int experince;
 
-
-  Data(this.id, this.name, this.SSN, this.salary, this.date_of_joining, this.experince,);
-}
-
-
-class FetchSql extends StatefulWidget {
-  const FetchSql({Key? key}) : super(key: key);
+class Authcheck extends StatefulWidget {
+  const Authcheck({Key? key}) : super(key: key);
 
   @override
-  State<FetchSql> createState() => _FetchSqlState();
+  State<Authcheck> createState() => _AuthcheckState();
 }
 
-class _FetchSqlState extends State<FetchSql> {
+class _AuthcheckState extends State<Authcheck> {
+  bool userAvailabe = false;
+  var data;
+  final box = GetStorage();
 
+  @override
+  void initState() {
 
-void fetch_data() async{
-  Uri url = Uri.parse('http://192.168.137.1/php_program/login.php');
+    _getuser();
+    super.initState();
+  }
 
+  void _getuser() async {
 
-  final String username = 'std1';
-  final String password = 'c0ucw';
-
-// Create a Map to hold the query parameters
-  final Map<String, String> body2 = {
-    'username': username,
-    'password': password,
-  };
-
-
-  final response = await http.post(url,body: body2
-  );
-
-  print(response.body);
-
-  setState(() {
-    body = response.body;
-    isloading = false;
-  });
-}
-
-var body ;
-bool isloading = true;
-
+    bool logged_in = box.read('logged_in') ?? false;
+    if(logged_in){
+      data = box.read('data');
+    }
+    setState(() {
+      userAvailabe = logged_in;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: GestureDetector(
-              onTap: fetch_data,
-              child: Container(
-
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.circular(8)
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('Fetch',
-                  style: TextStyle(
-                      color: Colors.black
-                  ),),
-                ),
-              ),
-            ),
-          ),
-
-          (!isloading) ?  Container(
-            height: 800,
-            child: ListView.builder(
-              itemCount: 2,
-              itemBuilder: (BuildContext context,int index){
-
-                return Text(body.toString());
-              },
-            ),
-          ) : Column()
-        ],
-      ),
-    );
+    return userAvailabe ? Frame(data: data) : LoginPage();
   }
 }
+
+
+
 

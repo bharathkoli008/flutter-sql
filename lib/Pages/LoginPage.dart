@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_textfield/gradient_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,20 +22,36 @@ class _LoginPageState extends State<LoginPage> {
 
   late SharedPreferences sharedPreferences;
    late http.Response response;
+   Map<String,dynamic> decoded_data = {};
+   final box  = GetStorage();
 
 
   Future  fetch_data(String username,String password) async{
-    Uri url = Uri.parse('http://192.168.137.1/php_program/login.php?username=std1&password=c0ucw');
+    Uri url = Uri.parse('https://sgvamcbailhongal.org/cms/api/student/login.php');
     bool login = false;
 
 // Create a Map to hold the query parameters
     final Map<String, String> body2 = {
-      'username': username,
-      'password': password,
+      "username": username,
+      "password": password,
+    };
+
+    String jsonBody = jsonEncode(body2);
+
+
+// Specify the headers
+    Map<String, String> headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Accept': '*/*',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json', // Add Content-Type header with 'application/json' value
     };
 
 
-response = await http.get(url);
+response = await http.post(url,
+  body: jsonBody,
+  headers: headers,
+);
      // response = await http.post(url,body: body2);
 
     if(response.body == '"User not found"'){
@@ -61,8 +78,16 @@ response = await http.get(url);
       });
 
     }
+    var data = '[' +  response.body.toString() + ']';
 
-    print(response.body);
+
+    decoded_data = jsonDecode(data)[0];
+
+   box.write('data', decoded_data);
+
+    print('=================================${decoded_data}');
+
+
 
     return login;
   }
@@ -71,10 +96,10 @@ response = await http.get(url);
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -148,10 +173,14 @@ response = await http.get(url);
 
                       var login = await fetch_data(id, password);
 
+
+
                       if(login){
+                        box.write('logged_in', true);
+
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) => Frame(
-                              data: response.body,
+                              data: decoded_data,
                             ),),);
                       }
                     },
@@ -206,29 +235,29 @@ response = await http.get(url);
                 )
               ],
             ),
+          ),
 
-            Positioned(
-              top: 110,
-              left: 245,
-              child: SizedBox(
-                //margin: const EdgeInsets.only(top: 85, left: 290),
-                height: MediaQuery.of(context).size.height * 0.17,
-                child: Image.asset("lib/assets/Polygon2.png",
-                ),
+          Positioned(
+            top: 110,
+            left: 245,
+            child: SizedBox(
+              //margin: const EdgeInsets.only(top: 85, left: 290),
+              height: MediaQuery.of(context).size.height * 0.17,
+              child: Image.asset("lib/assets/Polygon2.png",
               ),
             ),
-            Positioned(
-              top: 50,
-              left: 300,
-              child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.17,
+          ),
+          Positioned(
+            top: 50,
+            left: 300,
+            child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.17,
 
-                  child: Image.asset("lib/assets/Polygon.png")
-              ),
-            )
+                child: Image.asset("lib/assets/Polygon.png")
+            ),
+          )
 
-          ],
-        ),
+        ],
       ),
     );
   }
